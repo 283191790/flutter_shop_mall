@@ -1,4 +1,7 @@
 class KString{
+
+
+  static const String mainTitle = '博稞烘焙';
   static const String loading = '加载中';
   static const String loadReadyText = '上拉加载';
   static const String homeTitle = '首页';

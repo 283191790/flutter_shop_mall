@@ -1,20 +1,50 @@
 import 'package:flutter/material.dart';
+import './config/index.dart';
+import './provide/current_index_provide.dart';
+import 'package:provide/provide.dart';
 import './pages/index_page.dart';
 
-void main() => runApp(MyApp());
+
+
+
+
+void main(){
+
+  var currentIndexProvide = CurrentIndexProvide();
+
+  var providers = Providers();
+
+  providers
+
+    ..provide(Provider<CurrentIndexProvide>.value(currentIndexProvide));
+
+  runApp(ProviderNode(child: MyApp(), providers: providers));
+
+
+}
 
 class MyApp extends StatelessWidget {
+
+
   @override
   Widget build(BuildContext context) {
+
+
     return Container(
       child: MaterialApp(
-        title:"博稞烘焙",
+        title: KString.mainTitle,//标题
         debugShowCheckedModeBanner: false,
+
+        //定制主题
         theme: ThemeData(
-          primaryColor: Colors.pink
+          primaryColor: KColor.primaryColor,
         ),
-        home: IndexPage()
-        ),
+        home: IndexPage(),
+      ),
     );
   }
+
+
 }
+
+
