@@ -9,24 +9,23 @@ import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../config/index.dart';
 
-
-
 class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
-
 }
 
-class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin {
-
+class _HomePageState extends State<HomePage>
+    with AutomaticKeepAliveClientMixin {
   //防止刷新处理，保持当前状态
   @override
-  bool get wantKeepAlive =>true;
+  bool get wantKeepAlive => true;
 
-  GlobalKey<RefreshFooterState>_footerKey = new GlobalKey<RefreshFooterState>();
+  GlobalKey<RefreshFooterState> _footerKey =
+      new GlobalKey<RefreshFooterState>();
+
   //diff
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
     print("首页刷新了");
   }
@@ -34,22 +33,22 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromRGBO(244, 245, 245, 1.0),      
-      body:FutureBuilder(
-        future: request('homePageContent',formData:null),
-        builder: (context,snapshot){
-          if(snapshot.hasData){
-            
+      backgroundColor: Color.fromRGBO(244, 245, 245, 1.0),
+      body: FutureBuilder(
+        future: request('homePageContent', formData: null),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
             var data = json.decode(snapshot.data.toString());
             print(data);
-            List<Map> swiperDataList = (data['data']['slides']as List).cast(); //Swipe图
-            List<Map> navigatorList = (data['data']['category']as List).cast(); //分类
-            List<Map> recommendList = (data['data']['recommend']as List).cast();//商品推荐
-            List<Map> floor1 = (data['data']['floor1']as List).cast();//底部商品推荐
-            Map fp1 =data['data']['floor1Pic'];//广告
+            List<Map> swiperDataList =
+                (data['data']['slides'] as List).cast(); //Swipe图
+            List<Map> navigatorList =
+                (data['data']['category'] as List).cast(); //分类
+            List<Map> recommendList =
+                (data['data']['recommend'] as List).cast(); //商品推荐
+            List<Map> floor1 = (data['data']['floor1'] as List).cast(); //底部商品推荐
+            Map fp1 = data['data']['floor1Pic']; //广告
 
-
-      
             return EasyRefresh(
               refreshFooter: ClassicsFooter(
                 key: _footerKey,
@@ -60,26 +59,31 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
                 noMoreText: "",
                 moreInfo: KString.loading,
                 loadReadyText: KString.loadReadyText,
-                ),
-                child: ListView(
-                  children: <Widget>[
-                    SwiperDiy(
-                      swiperDataList: swiperDataList,
-                    ),
-                    TopNavigator(
-                      navigatorList: navigatorList,
-                    ),
-                    RecommendList(
-                      recommendList: recommendList,
-                    ),
-                  ],
-                ),
-                loadMore: ()async{
-                  print("开始加载更多");
-                },
+              ),
+              child: ListView(
+                children: <Widget>[
+                  SwiperDiy(
+                    swiperDataList: swiperDataList,
+                  ),
+                  TopNavigator(
+                    navigatorList: navigatorList,
+                  ),
+                  RecommendList(
+                    recommendList: recommendList,
+                  ),
+                  FloorPic(
+                    floorPic: fp1,
+                  ),
+                  Floor(
+                    floor: floor1,
+                  ),
+                ],
+              ),
+              loadMore: () async {
+                print("开始加载更多");
+              },
             );
-
-          }else{
+          } else {
             return Center(
               child: Text('加载中'),
             );
@@ -89,26 +93,27 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
     );
   }
 }
+
 //轮播组建编写
 class SwiperDiy extends StatelessWidget {
   final List swiperDataList;
-  SwiperDiy({Key key,this.swiperDataList}):super(key:key);
+
+  SwiperDiy({Key key, this.swiperDataList}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-
     return Container(
       color: Colors.white,
       height: ScreenUtil().setHeight(333),
       width: ScreenUtil().setWidth(750),
       child: Swiper(
-        itemBuilder: (BuildContext context,int index){
+        itemBuilder: (BuildContext context, int index) {
           return InkWell(
-            onTap:(){},
-            child:Image.network(
-              "${swiperDataList[index]['image']}",
-              fit:BoxFit.cover,
-          ));
+              onTap: () {},
+              child: Image.network(
+                "${swiperDataList[index]['image']}",
+                fit: BoxFit.cover,
+              ));
         },
         itemCount: swiperDataList.length,
         pagination: SwiperPagination(),
@@ -117,20 +122,24 @@ class SwiperDiy extends StatelessWidget {
     );
   }
 }
+
 //首页分类导航组建
-class TopNavigator extends StatelessWidget{
+class TopNavigator extends StatelessWidget {
   final List navigatorList;
 
-  TopNavigator({Key key, this.navigatorList}):super(key: key);
+  TopNavigator({Key key, this.navigatorList}) : super(key: key);
 
-  Widget _gridViewItemUI(BuildContext context,item,index){
+  Widget _gridViewItemUI(BuildContext context, item, index) {
     return InkWell(
-      onTap: (){
+      onTap: () {
         //跳转分类页面
       },
       child: Column(
         children: <Widget>[
-          Image.network(item['image'],width: ScreenUtil().setWidth(95),),
+          Image.network(
+            item['image'],
+            width: ScreenUtil().setWidth(95),
+          ),
           Text(item['mallCategoryName'])
         ],
       ),
@@ -139,27 +148,27 @@ class TopNavigator extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
-    if(navigatorList.length > 10){  //判断分类个数
+    if (navigatorList.length > 10) {
+      //判断分类个数
       navigatorList.removeRange(10, navigatorList.length);
     }
 
     var tempIndex = -1;
     return Container(
-      color:Colors.white,
-      margin: EdgeInsets.only(top: 5.0), //分类数量
+      color: Colors.white,
+      margin: EdgeInsets.only(top: 5.0),
+      //分类数量
       height: ScreenUtil().setHeight(140),
       padding: EdgeInsets.all(3.0),
       child: GridView.count(
         //禁止滚动
-        physics:NeverScrollableScrollPhysics(),
-          crossAxisCount: 5,
+        physics: NeverScrollableScrollPhysics(),
+        crossAxisCount: 5,
         padding: EdgeInsets.all(4.0),
-        children: navigatorList.map((item){
+        children: navigatorList.map((item) {
           tempIndex++;
           return _gridViewItemUI(context, item, tempIndex);
-    }).toList(),
-
-
+        }).toList(),
       ),
     );
   }
@@ -169,7 +178,7 @@ class TopNavigator extends StatelessWidget{
 class RecommendList extends StatelessWidget {
   final List recommendList;
 
-  RecommendList({Key key, this.recommendList}) :super(key: key);
+  RecommendList({Key key, this.recommendList}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -192,8 +201,7 @@ class RecommendList extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         border: Border(
-            bottom: BorderSide(width: 0.5, color: KColor.defaultBorderColor)
-        ),
+            bottom: BorderSide(width: 0.5, color: KColor.defaultBorderColor)),
       ),
       child: Text(
         KString.recommendText,
@@ -208,11 +216,10 @@ class RecommendList extends StatelessWidget {
       height: ScreenUtil().setHeight(280),
       child: ListView.builder(
           scrollDirection: Axis.horizontal,
-          itemCount:8,   //recommendList.length, 商品推荐长度数量
+          itemCount: 8, //recommendList.length, 商品推荐长度数量
           itemBuilder: (context, index) {
             return _item(index, context);
-          }
-      ),
+          }),
     );
   }
 
@@ -233,13 +240,13 @@ class RecommendList extends StatelessWidget {
             //防止溢出
             Expanded(
               child: Image.network(
-                recommendList[index]['image'], fit: BoxFit.cover,),
+                recommendList[index]['image'],
+                fit: BoxFit.cover,
+              ),
             ),
             Text(
               '￥${recommendList[index]['presentPrice']}',
-              style: TextStyle(
-                  color: KColor.presentPriceTextColor
-              ),
+              style: TextStyle(color: KColor.presentPriceTextColor),
             ),
             Text(
               '￥${recommendList[index]['oriPrice']}',
@@ -252,9 +259,132 @@ class RecommendList extends StatelessWidget {
   }
 }
 
+//商品中间广告
+class FloorPic extends StatelessWidget {
+  final Map floorPic;
 
+  FloorPic({Key key, this.floorPic}) : super(key: key);
 
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.only(top: 10.0),
+      child: InkWell(
+        child: Image.network(
+          floorPic['PICTURE_ADDRESS'],
+          fit: BoxFit.cover,
+        ),
+        onTap: () {},
+      ),
+    );
+  }
+}
 
+//商品推荐下层
+class Floor extends StatelessWidget {
+  List<Map> floor;
 
+  Floor({Key key, this.floor}) : super(key: key);
 
+  void jumpDetail(context,String goodId){
+    //跳转到详情界面
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Row(
+        children: <Widget>[
+          //左侧商品
+          Expanded(
+            child: Column(
+              children: <Widget>[
+                //左上角大图
+                Container(
+                  padding: EdgeInsets.only(top: 4),
+                  height: ScreenUtil().setHeight(400),
+                  child: InkWell(
+                    child: Image.network(
+                      floor[0]['image'],
+                      fit: BoxFit.cover,
+                    ),
+                    onTap: (){
+                      jumpDetail(context,floor[0]['goodsId']);
+                    },
+                  ),
+                ),
+                //左下角小图
+                Container(
+                  padding: EdgeInsets.only(top: 1,right: 1),
+                  height: ScreenUtil().setHeight(200),
+                  child: InkWell(
+                    child: Image.network(
+                      floor[1]['image'],
+                      fit: BoxFit.cover,
+                    ),
+                    onTap: (){
+                      jumpDetail(context,floor[1]['goodsId']);
+                    },
+                  ),
+                )
+
+              ],
+            ),
+          ),
+          //右侧商品
+          Expanded(
+            child: Column(
+              children: <Widget>[
+                //右上角图
+                Container(
+                  padding: EdgeInsets.only(top: 1,left: 1,bottom: 1),
+                  height: ScreenUtil().setHeight(200),
+                  child: InkWell(
+                    child: Image.network(
+                      floor[2]['image'],
+                      fit: BoxFit.cover,
+                    ),
+                    onTap: (){
+                      jumpDetail(context,floor[2]['goodsId']);
+                    },
+                  ),
+                ),
+                //右中间图
+                Container(
+                  padding: EdgeInsets.only(top: 1,left: 1),
+                  height: ScreenUtil().setHeight(200),
+                  child: InkWell(
+                    child: Image.network(
+                      floor[3]['image'],
+                      fit: BoxFit.cover,
+                    ),
+                    onTap: (){
+                      jumpDetail(context,floor[3]['goodsId']);
+                    },
+                  ),
+                ),
+                //右下角图
+                Container(
+                  padding: EdgeInsets.only(top: 1,left: 1),
+                  height: ScreenUtil().setHeight(200),
+                  child: InkWell(
+                    child: Image.network(
+                      floor[4]['image'],
+                      fit: BoxFit.cover,
+                    ),
+                    onTap: (){
+                      jumpDetail(context,floor[4]['goodsId']);
+                    },
+                  ),
+                )
+
+              ],
+            ),
+          ),
+
+        ],
+      ),
+    );
+  }
+}
 
