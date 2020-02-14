@@ -3,6 +3,7 @@ import './config/index.dart';
 import './provide/current_index_provide.dart';
 import 'package:provide/provide.dart';
 import './pages/index_page.dart';
+import './provide/category_provide.dart';
 
 
 
@@ -11,12 +12,14 @@ import './pages/index_page.dart';
 void main(){
 
   var currentIndexProvide = CurrentIndexProvide();
+  var categoryProvide = CategoryProvide();
 
   var providers = Providers();
 
   providers
 
-    ..provide(Provider<CurrentIndexProvide>.value(currentIndexProvide));
+    ..provide(Provider<CurrentIndexProvide>.value(currentIndexProvide))
+    ..provide(Provider<CategoryProvide>.value(categoryProvide));
 
   runApp(ProviderNode(child: MyApp(), providers: providers));
 
