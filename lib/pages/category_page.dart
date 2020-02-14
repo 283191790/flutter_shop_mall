@@ -31,6 +31,7 @@ class CategoryPage extends StatelessWidget {
     
   }
 }
+
 //左侧分类
 class LeftCategoryNav extends StatefulWidget {
   LeftCategoryNav({Key key}) : super(key: key);
