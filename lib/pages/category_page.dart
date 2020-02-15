@@ -82,6 +82,11 @@ class _LeftCategoryNavState extends State<LeftCategoryNav> {
 
     return InkWell(
       onTap: () {
+        var secondCategoryLisd = list[index].secondCategoryVO;
+        var firstCategoryId = list[index].firstCategoryId;
+        Provide.value<CategoryProvide>(context).changeFirstCategory(firstCategoryId, index);
+        Provide.value<CategoryProvide>(context).getSecondCategory(secondCategoryLisd, firstCategoryId);
+        //获取商品列表
       },
       child: Container(
         height: ScreenUtil().setHeight(90),
@@ -131,9 +136,58 @@ class RightCategoryNav extends StatefulWidget {
 class _RightCategoryNavState extends State<RightCategoryNav> {
   @override
   Widget build(BuildContext context) {
-    return Text("右侧分类");
+    return Container(
+      child: Provide<CategoryProvide>(
+        builder:(context,child,categoryProvide){
+          return Container(
+            height:ScreenUtil().setHeight(80),
+            width:ScreenUtil().setWidth(570),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              border: Border(
+                bottom: BorderSide(width: 1,color: KColor.defaultBorderColor),
+              ),
+            ),
+            child: ListView.builder(
+              scrollDirection:Axis.horizontal,
+                itemCount: categoryProvide.secondCategoryList.length,
+                itemBuilder: (context,index){
+                  return _rightInkWel(index,categoryProvide.secondCategoryList[index]);
+                },
+            ),
+          );
+          } 
+        ),
+    );
     
   }
+  Widget _rightInkWel(int index,SecondCategoryVO item){
+
+    bool isClick = false;
+    isClick = (index == Provide.value<CategoryProvide>(context).secondCategoryIndex) ? true : false;
+
+    return InkWell(
+      onTap: () {
+ 
+        Provide.value<CategoryProvide>(context).changeSecondIndex(index, item.secondCategoryId);
+        //获取商品列表
+      },
+      child: Container(
+        padding:EdgeInsets.fromLTRB(5.0, 10.0, 5.0, 10.0),
+        child:Text(
+          item.secondCategoryName,
+          style: TextStyle(
+            fontSize: ScreenUtil().setSp(28),
+            color: isClick ? KColor.defaultBorderColor : Colors.black,
+          ),
+        )
+      )
+    );
+  }
+
+
+
+
 }
 
 //商品列表
