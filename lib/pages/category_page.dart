@@ -58,6 +58,7 @@ class _LeftCategoryNavState extends State<LeftCategoryNav> {
     return Provide<CategoryProvide>(
       builder: (context,child,val){
         //获取商品列表
+        _getGoodList(context);
         listIndex = val.firstCategoryIndex;
 
         return Container(
@@ -87,6 +88,7 @@ class _LeftCategoryNavState extends State<LeftCategoryNav> {
         Provide.value<CategoryProvide>(context).changeFirstCategory(firstCategoryId, index);
         Provide.value<CategoryProvide>(context).getSecondCategory(secondCategoryLisd, firstCategoryId);
         //获取商品列表
+        _getGoodList(context,firstCategoryId: firstCategoryId);
       },
       child: Container(
         height: ScreenUtil().setHeight(90),
@@ -124,6 +126,22 @@ _getCategory() async {
   });
 
 }
+_getGoodList(context,{String firstCategoryId}){
+var data = {
+  'firstCategoryId':firstCategoryId == null ? Provide.value<CategoryProvide>(context).firstCategoryId:firstCategoryId,
+  'secondCategoryId':Provide.value<CategoryProvide>(context).secondCategoryId,
+  'page':1
+};
+
+  request('getCategoryGoods',formData:data).then((val){
+    var data = json.decode(val.toString());
+    print(data);
+  });
+
+}
+
+
+
 }
 //右侧分类
 class RightCategoryNav extends StatefulWidget {
@@ -171,6 +189,7 @@ class _RightCategoryNavState extends State<RightCategoryNav> {
  
         Provide.value<CategoryProvide>(context).changeSecondIndex(index, item.secondCategoryId);
         //获取商品列表
+        _getGoodList(context,item.secondCategoryId);
       },
       child: Container(
         padding:EdgeInsets.fromLTRB(5.0, 10.0, 5.0, 10.0),
@@ -184,6 +203,20 @@ class _RightCategoryNavState extends State<RightCategoryNav> {
       )
     );
   }
+
+  _getGoodList(context,String secondCategoryId){
+var data = {
+  'firstCategoryId':Provide.value<CategoryProvide>(context).firstCategoryId,
+  'secondCategoryId':secondCategoryId,
+  'page':1
+};
+
+  request('getCategoryGoods',formData:data).then((val){
+    var data = json.decode(val.toString());
+    print(data);
+  });
+
+}
 
 
 

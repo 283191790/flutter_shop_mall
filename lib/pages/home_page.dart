@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_shop_mall/config/font.dart';
-import 'package:flutter_shop_mall/model/category_model.dart';
-import 'package:flutter_shop_mall/service/service_method.dart';
+import '../config/index.dart';
+import '../service/service_method.dart';
 import 'dart:convert';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
-import 'package:flutter_shop_mall/config/color.dart';
-import 'package:flutter_shop_mall/config/string.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../config/index.dart';
+import '../model/category_model.dart';
 import '../provide/category_provide.dart';
 import '../provide/current_index_provide.dart';
 import 'package:provide/provide.dart';
@@ -24,35 +21,35 @@ class _HomePageState extends State<HomePage>
   //火爆专区分页
   int page = 1;
   //火爆专区数据
-  List<Map>hotGoodsList = [];
+  List<Map> hotGoodsList = [];
 
-  //防止刷新处理，保持当前状态
+  //仿止刷新处理 保持当前状态
   @override
   bool get wantKeepAlive => true;
 
   GlobalKey<RefreshFooterState> _footerKey =
       new GlobalKey<RefreshFooterState>();
 
-  //diff
-
   @override
   void initState() {
     super.initState();
-    print("首页刷新了");
+    print('首页刷新了...');
   }
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       backgroundColor: Color.fromRGBO(244, 245, 245, 1.0),
+      
       body: FutureBuilder(
-        future: request('homePageContent', formData: null),
+        future: request('homePageContext', formData: null),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             var data = json.decode(snapshot.data.toString());
             print(data);
             List<Map> swiperDataList =
-                (data['data']['slides'] as List).cast(); //Swipe图
+                (data['data']['slides'] as List).cast(); //轮播图
             List<Map> navigatorList =
                 (data['data']['category'] as List).cast(); //分类
             List<Map> recommendList =
@@ -67,8 +64,9 @@ class _HomePageState extends State<HomePage>
                 textColor: KColor.refreshTextColor,
                 moreInfoColor: KColor.refreshTextColor,
                 showMore: true,
-                noMoreText: "",
+                noMoreText: '',
                 moreInfo: KString.loading,
+                //加载中...
                 loadReadyText: KString.loadReadyText,
               ),
               child: ListView(
@@ -79,26 +77,24 @@ class _HomePageState extends State<HomePage>
                   TopNavigator(
                     navigatorList: navigatorList,
                   ),
-                  RecommendList(
-                    recommendList: recommendList,
+                  RecommendUI(
+                    recommandList: recommendList,
                   ),
                   FloorPic(
                     floorPic: fp1,
                   ),
-                  Floor(
-                    floor: floor1,
-                  ),
+                  Floor(floor: floor1),
                   _hotGoods(),
                 ],
               ),
               loadMore: () async {
-                print("开始加载更多");
+                print('开始加载更多');
                 _getHotGoods();
               },
             );
           } else {
             return Center(
-              child: Text('加载中'),
+              child: Text('加载中...'),
             );
           }
         },
@@ -107,43 +103,47 @@ class _HomePageState extends State<HomePage>
   }
 
   void _getHotGoods(){
-    var formPage ={'page':page};
-    request("getHotGoods",formData: formPage).then((val){
+    var formPage = {'page':page};
+    request('getHotGoods',formData: formPage).then((val){
 
       var data = json.decode(val.toString());
-      List<Map> newGoodsList=(data['data']as List).cast();
+      List<Map> newGoodsList = (data['data'] as List).cast();
       //设置火爆专区数据列表
       setState(() {
+
         hotGoodsList.addAll(newGoodsList);
+        page++;
+
       });
 
     });
 
   }
+
   //火爆专区标题
   Widget hotTitle = Container(
     margin: EdgeInsets.only(top: 10.0),
     padding: EdgeInsets.all(5.0),
     alignment: Alignment.center,
-    decoration:BoxDecoration(
+    decoration: BoxDecoration(
       color: Colors.white,
       border: Border(
         bottom: BorderSide(width: 0.5,color: KColor.defaultBorderColor),
-      )
-    ) ,
+      ),
+    ),
     //火爆专区
     child: Text(KString.hotGoodsTitle,style: TextStyle(color: KColor.homeSubTitleTextColor),),
   );
 
-
-
   //火爆专区子项
   Widget _wrapList(){
-    if(hotGoodsList.length!=0){
-      List<Widget> ListWidget = hotGoodsList.map((val){
+
+    if(hotGoodsList.length != 0){
+      List<Widget> listWidget = hotGoodsList.map((val){
 
         return InkWell(
           onTap: (){
+            
           },
           child: Container(
             width: ScreenUtil().setWidth(372),
@@ -151,42 +151,44 @@ class _HomePageState extends State<HomePage>
             padding: EdgeInsets.all(5.0),
             margin: EdgeInsets.only(bottom: 3.0),
             child: Column(
-              children:<Widget>[
+              children: <Widget>[
                 Image.network(
                   val['image'],
                   width: ScreenUtil().setWidth(375),
                   height: 200,
-                    fit: BoxFit.cover,
+                  fit: BoxFit.cover,
                 ),
                 Text(
                   val['name'],
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(fontSize: ScreenUtil().setSp(26)),
+
                 ),
                 Row(
                   children: <Widget>[
-                    Text('￥${val['presentPrice']}',style: TextStyle(color: KColor.presentPriceTextColor),),
-                    Text('￥${val['oriPrice']}',style: TextStyle(color: KColor.oriPriceTextColor),),
+                    Text('￥${val['presentPrice']}',style: TextStyle(color:KColor.presentPriceTextColor),),
+                    Text('￥${val['oriPrice']}',style: TextStyle(color:KColor.oriPriceTextColor),),
                   ],
-                )
-              ]
+                ),
+              ],
             ),
           ),
         );
+
       }).toList();
+
       return Wrap(
         spacing: 2,
-          children: ListWidget,
+        children: listWidget,
       );
 
     }else{
       return Text('');
     }
 
-
-
   }
+
   //火爆专区组合
   Widget _hotGoods(){
     return Container(
@@ -196,12 +198,12 @@ class _HomePageState extends State<HomePage>
           _wrapList(),
         ],
       ),
-
     );
   }
+
 }
 
-//轮播组建编写
+//首页轮播组件编写
 class SwiperDiy extends StatelessWidget {
   final List swiperDataList;
 
@@ -216,12 +218,15 @@ class SwiperDiy extends StatelessWidget {
       child: Swiper(
         itemBuilder: (BuildContext context, int index) {
           return InkWell(
-              onTap: () {},
+              onTap: () {
+                
+              },
               child: Image.network(
                 "${swiperDataList[index]['image']}",
                 fit: BoxFit.cover,
               ));
         },
+        //图片数量
         itemCount: swiperDataList.length,
         pagination: SwiperPagination(),
         autoplay: true,
@@ -230,31 +235,25 @@ class SwiperDiy extends StatelessWidget {
   }
 }
 
-//首页分类导航组建
+//首页分类导航组件
 class TopNavigator extends StatelessWidget {
   final List navigatorList;
 
   TopNavigator({Key key, this.navigatorList}) : super(key: key);
 
   Widget _gridViewItemUI(BuildContext context, item, index) {
-    
     return InkWell(
       onTap: () {
-        //跳转分类页面
-        _goCategory(context, index, item['firstCategoryId']);
+        //跳转到分类页面
+        _goCategory(context,index,item['firstCategoryId']);
       },
-      child: 
-      
-      Column(
+      child: Column(
         children: <Widget>[
-          Container(
-            width:ScreenUtil().setHeight(85),
-            child:Image.network(
+          Image.network(
             item['image'],
             width: ScreenUtil().setWidth(95),
           ),
-          ),
-          Text(item['mallCategoryName'])
+          Text(item['firstCategoryName'])
         ],
       ),
     );
@@ -263,7 +262,6 @@ class TopNavigator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (navigatorList.length > 10) {
-      //判断分类个数
       navigatorList.removeRange(10, navigatorList.length);
     }
 
@@ -271,8 +269,7 @@ class TopNavigator extends StatelessWidget {
     return Container(
       color: Colors.white,
       margin: EdgeInsets.only(top: 5.0),
-      //分类数量
-      height: ScreenUtil().setHeight(140),
+      height: ScreenUtil().setHeight(250),
       padding: EdgeInsets.all(3.0),
       child: GridView.count(
         //禁止滚动
@@ -286,6 +283,8 @@ class TopNavigator extends StatelessWidget {
       ),
     );
   }
+
+  //跳转到分类页面
   void _goCategory(context,int index,String categoryId) async{
     await request('getCategory',formData: null).then((val){
       var data = json.decode(val.toString());
@@ -295,16 +294,15 @@ class TopNavigator extends StatelessWidget {
       Provide.value<CategoryProvide>(context).getSecondCategory(list[index].secondCategoryVO, categoryId);
       Provide.value<CurrentIndexProvide>(context).changeIndex(1);
     });
-
-
   }
+
 }
 
-//商品标题
-class RecommendList extends StatelessWidget {
-  final List recommendList;
+//商品推荐
+class RecommendUI extends StatelessWidget {
+  final List recommandList;
 
-  RecommendList({Key key, this.recommendList}) : super(key: key);
+  RecommendUI({Key key, this.recommandList}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -330,7 +328,7 @@ class RecommendList extends StatelessWidget {
             bottom: BorderSide(width: 0.5, color: KColor.defaultBorderColor)),
       ),
       child: Text(
-        KString.recommendText,
+        KString.recommendText, //'商品推荐',
         style: TextStyle(color: KColor.homeSubTitleTextColor),
       ),
     );
@@ -342,7 +340,7 @@ class RecommendList extends StatelessWidget {
       height: ScreenUtil().setHeight(280),
       child: ListView.builder(
           scrollDirection: Axis.horizontal,
-          itemCount: 8, //recommendList.length, 商品推荐长度数量
+          itemCount: recommandList.length,
           itemBuilder: (context, index) {
             return _item(index, context);
           }),
@@ -351,7 +349,9 @@ class RecommendList extends StatelessWidget {
 
   Widget _item(index, context) {
     return InkWell(
-      onTap: () {},
+      onTap: () {
+        
+      },
       child: Container(
         width: ScreenUtil().setWidth(280),
         padding: EdgeInsets.all(8.0),
@@ -363,19 +363,19 @@ class RecommendList extends StatelessWidget {
         ),
         child: Column(
           children: <Widget>[
-            //防止溢出
+            //仿止溢出
             Expanded(
               child: Image.network(
-                recommendList[index]['image'],
-                fit: BoxFit.cover,
+                recommandList[index]['image'],
+                fit: BoxFit.contain,
               ),
             ),
             Text(
-              '￥${recommendList[index]['presentPrice']}',
+              '￥${recommandList[index]['presentPrice']}',
               style: TextStyle(color: KColor.presentPriceTextColor),
             ),
             Text(
-              '￥${recommendList[index]['oriPrice']}',
+              '￥${recommandList[index]['oriPrice']}',
               style: KFont.oriPriceStyle,
             ),
           ],
@@ -385,7 +385,7 @@ class RecommendList extends StatelessWidget {
   }
 }
 
-//商品中间广告
+//商品推荐中间广告
 class FloorPic extends StatelessWidget {
   final Map floorPic;
 
@@ -406,6 +406,7 @@ class FloorPic extends StatelessWidget {
   }
 }
 
+
 //商品推荐下层
 class Floor extends StatelessWidget {
   List<Map> floor;
@@ -413,11 +414,12 @@ class Floor extends StatelessWidget {
   Floor({Key key, this.floor}) : super(key: key);
 
   void jumpDetail(context,String goodId){
-    //跳转到详情界面
+    
   }
 
   @override
   Widget build(BuildContext context) {
+    double width = ScreenUtil.getInstance().width;
     return Container(
       child: Row(
         children: <Widget>[
@@ -435,11 +437,11 @@ class Floor extends StatelessWidget {
                       fit: BoxFit.cover,
                     ),
                     onTap: (){
-                      jumpDetail(context,floor[0]['goodsId']);
+                      jumpDetail(context, floor[0]['goodsId']);
                     },
                   ),
                 ),
-                //左下角小图
+                //左下角图
                 Container(
                   padding: EdgeInsets.only(top: 1,right: 1),
                   height: ScreenUtil().setHeight(200),
@@ -449,11 +451,10 @@ class Floor extends StatelessWidget {
                       fit: BoxFit.cover,
                     ),
                     onTap: (){
-                      jumpDetail(context,floor[1]['goodsId']);
+                      jumpDetail(context, floor[1]['goodsId']);
                     },
                   ),
-                )
-
+                ),
               ],
             ),
           ),
@@ -461,9 +462,9 @@ class Floor extends StatelessWidget {
           Expanded(
             child: Column(
               children: <Widget>[
-                //右上角图
+                //右上图
                 Container(
-                  padding: EdgeInsets.only(top: 1,left: 1,bottom: 1),
+                  padding: EdgeInsets.only(top: 4,left:1,bottom: 1),
                   height: ScreenUtil().setHeight(200),
                   child: InkWell(
                     child: Image.network(
@@ -471,11 +472,11 @@ class Floor extends StatelessWidget {
                       fit: BoxFit.cover,
                     ),
                     onTap: (){
-                      jumpDetail(context,floor[2]['goodsId']);
+                      jumpDetail(context, floor[2]['goodsId']);
                     },
                   ),
                 ),
-                //右中间图
+                //右中图
                 Container(
                   padding: EdgeInsets.only(top: 1,left: 1),
                   height: ScreenUtil().setHeight(200),
@@ -485,11 +486,11 @@ class Floor extends StatelessWidget {
                       fit: BoxFit.cover,
                     ),
                     onTap: (){
-                      jumpDetail(context,floor[3]['goodsId']);
+                      jumpDetail(context, floor[3]['goodsId']);
                     },
                   ),
                 ),
-                //右下角图
+                //右下图
                 Container(
                   padding: EdgeInsets.only(top: 1,left: 1),
                   height: ScreenUtil().setHeight(200),
@@ -499,18 +500,18 @@ class Floor extends StatelessWidget {
                       fit: BoxFit.cover,
                     ),
                     onTap: (){
-                      jumpDetail(context,floor[4]['goodsId']);
+                      jumpDetail(context, floor[4]['goodsId']);
                     },
                   ),
-                )
+                ),
 
               ],
             ),
           ),
-
         ],
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        mainAxisSize: MainAxisSize.min,
       ),
     );
   }
 }
-

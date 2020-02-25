@@ -1,8 +1,8 @@
-const serviceUrl = 'http://111.229.60.108:3000/';
+const base_url = 'http://111.229.60.108:3000/';
 const servicePath = {
-   'homePageContent':serviceUrl + 'getHomePageContent', // 商店首页信息
-   'getHotGoods':serviceUrl + 'getHotGoods', // 首页热卖商品
-   'getCategory':serviceUrl + 'getCategory',  // 商品类别信息
-   'getCategoryGoods':serviceUrl + 'getCategoryGoods',  // 商品分类页面商品列表
-   'getGoodDetail':serviceUrl + 'getGoodDetail',  // 商品详情
+  'homePageContext':base_url + 'getHomePageContent',//首页数据
+  'getHotGoods':base_url + 'getHotGoods',//火爆专区
+  'getCategory':base_url + 'getCategory',//商品类别信息
+  'getCategoryGoods':base_url + 'getCategoryGoods',//商品分类别的商品列表
+  'getGoodDetail':base_url + 'getGoodDetail',//商品详细信息
 };
