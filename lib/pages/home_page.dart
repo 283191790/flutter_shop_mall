@@ -253,7 +253,12 @@ class TopNavigator extends StatelessWidget {
             item['image'],
             width: ScreenUtil().setWidth(95),
           ),
-          Text(item['firstCategoryName'])
+          Text(item['firstCategoryName'],
+          style: TextStyle(
+            color:Colors.black,
+            fontSize: 11.0
+          ),)
+          
         ],
       ),
     );
@@ -434,7 +439,7 @@ class Floor extends StatelessWidget {
                   child: InkWell(
                     child: Image.network(
                       floor[0]['image'],
-                      fit: BoxFit.cover,
+                      fit: BoxFit.fill,
                     ),
                     onTap: (){
                       jumpDetail(context, floor[0]['goodsId']);
@@ -448,7 +453,7 @@ class Floor extends StatelessWidget {
                   child: InkWell(
                     child: Image.network(
                       floor[1]['image'],
-                      fit: BoxFit.cover,
+                      fit: BoxFit.fill,
                     ),
                     onTap: (){
                       jumpDetail(context, floor[1]['goodsId']);
@@ -469,7 +474,7 @@ class Floor extends StatelessWidget {
                   child: InkWell(
                     child: Image.network(
                       floor[2]['image'],
-                      fit: BoxFit.cover,
+                      fit: BoxFit.fill,
                     ),
                     onTap: (){
                       jumpDetail(context, floor[2]['goodsId']);
@@ -483,7 +488,7 @@ class Floor extends StatelessWidget {
                   child: InkWell(
                     child: Image.network(
                       floor[3]['image'],
-                      fit: BoxFit.cover,
+                      fit: BoxFit.fill,
                     ),
                     onTap: (){
                       jumpDetail(context, floor[3]['goodsId']);
@@ -497,7 +502,7 @@ class Floor extends StatelessWidget {
                   child: InkWell(
                     child: Image.network(
                       floor[4]['image'],
-                      fit: BoxFit.cover,
+                      fit: BoxFit.fill,
                     ),
                     onTap: (){
                       jumpDetail(context, floor[4]['goodsId']);

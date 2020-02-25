@@ -7,6 +7,8 @@ import 'dart:convert';
 import '../model/category_model.dart';
 import '../provide/category_provide.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../provide/category_goods_list_provide.dart';
+import '../model/category_goods_list_model.dart';
 
 //主分类页面
 class CategoryPage extends StatelessWidget {
@@ -62,7 +64,7 @@ class _LeftCategoryNavState extends State<LeftCategoryNav> {
         listIndex = val.firstCategoryIndex;
 
         return Container(
-          width:ScreenUtil().setWidth(180),
+          width:ScreenUtil().setWidth(170),
           decoration: BoxDecoration(
             border:Border(right: BorderSide(width:1,color:KColor.defaultBorderColor)),
           ),
@@ -102,9 +104,11 @@ class _LeftCategoryNavState extends State<LeftCategoryNav> {
         ),
         child: Text(
           list[index].firstCategoryName,
+          textAlign: TextAlign.center,
           style:TextStyle(
             color:isClick?KColor.primaryColor:Colors.black,
-            fontSize:ScreenUtil().setSp(28),
+            fontSize:ScreenUtil().setSp(40),
+            
           ),
         ),
       ),
@@ -136,6 +140,9 @@ var data = {
   request('getCategoryGoods',formData:data).then((val){
     var data = json.decode(val.toString());
     print(data);
+    CategoryGoodsListModel goodList = CategoryGoodsListModel.fromJson(data);
+    Provide.value<CategoryGoodsListProvide>(context).getGoodsList(goodList.data);
+
   });
 
 }
@@ -158,7 +165,7 @@ class _RightCategoryNavState extends State<RightCategoryNav> {
       child: Provide<CategoryProvide>(
         builder:(context,child,categoryProvide){
           return Container(
-            height:ScreenUtil().setHeight(80),
+            height:ScreenUtil().setHeight(70),
             width:ScreenUtil().setWidth(570),
             decoration: BoxDecoration(
               color: Colors.white,
@@ -214,6 +221,13 @@ var data = {
   request('getCategoryGoods',formData:data).then((val){
     var data = json.decode(val.toString());
     print(data);
+    CategoryGoodsListModel goodList = CategoryGoodsListModel.fromJson(data);
+    if(goodList.data == null){
+      Provide.value<CategoryGoodsListProvide>(context).getGoodsList([]);
+    }else
+      {Provide.value<CategoryGoodsListProvide>(context).getGoodsList(goodList.data);
+    }
+    
   });
 
 }
@@ -233,9 +247,51 @@ class CategoryGoodsList extends StatefulWidget {
 }
 
 class _CategoryGoodsListState extends State<CategoryGoodsList> {
+
+  GlobalKey<RefreshFooterState> _footerKey = new GlobalKey<RefreshFooterState>();
+  //滚动控制
+  var scrollController = new ScrollController();
   @override
   Widget build(BuildContext context) {
-    return  Text("商品列表");
+    return  Provide<CategoryGoodsListProvide>(
+      builder: (context,child,data){
+        try{
+          if(Provide.value<CategoryProvide>(context).page ==1){
+            scrollController.jumpTo(0.0);
+          }
+        }catch(e){
+          print('页面初始化${e}');
+        }
+
+        if(data.goodsList.length>0){
+          return Expanded(child: Container(
+            width:ScreenUtil().setWidth(570),
+            child:EasyRefresh(
+              refreshFooter: ClassicsFooter(
+                key:_footerKey,
+                bgColor: Colors.white,
+                textColor: KColor.refreshTextColor,
+                moreInfoColor: KColor.refreshTextColor,
+                showMore: true,
+                noMoreText: Provide.value<CategoryProvide>(context).noMoreText,
+                moreInfo: KString.loading,
+                loadReadyText: KString.loadReadyText,
+              ),
+              child: ListView.builder(
+                controller: scrollController,
+                itemCount: data.goodsList.length,
+                itemBuilder: (context,index){
+                  return Text('');
+                },),
+            )
+          ));
+          
+        }
+        else{
+          
+        }
+      },
+    );
     
   }
 }
