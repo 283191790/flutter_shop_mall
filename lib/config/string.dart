@@ -11,5 +11,9 @@ class KString{
 
   static const String recommendText = '商品推荐';
   static const String hotGoodsTitle = '火爆专区';
+  static const String noMoreText = '没有更多了';
+    static const String toBottomed = '已经到底了';
+    static const String noMoreData = '暂时没有数据';
+
 
 }
