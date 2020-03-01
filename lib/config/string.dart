@@ -14,6 +14,7 @@ class KString{
   static const String noMoreText = '没有更多了';
     static const String toBottomed = '已经到底了';
     static const String noMoreData = '暂时没有数据';
+    static const String detailsPageTitle = '商品详情';
 
 
 }

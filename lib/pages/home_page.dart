@@ -9,6 +9,7 @@ import '../model/category_model.dart';
 import '../provide/category_provide.dart';
 import '../provide/current_index_provide.dart';
 import 'package:provide/provide.dart';
+import '../routers/application.dart';
 
 
 class HomePage extends StatefulWidget {
@@ -219,7 +220,7 @@ class SwiperDiy extends StatelessWidget {
         itemBuilder: (BuildContext context, int index) {
           return InkWell(
               onTap: () {
-                
+                Application.router.navigateTo(context,'/detail?id=${swiperDataList[index]['goodsId']}');
               },
               child: Image.network(
                 "${swiperDataList[index]['image']}",
