@@ -47,6 +47,8 @@ class DetailsGoodsData{
 }
 
 
+
+
 class GoodInfo{
   int amount;
   String goodsId;

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../model/details_model.dart';
 import '../service/service_method.dart';
 import 'dart:convert';
+import 'category_goods_list_provide.dart';
 
 //切换底部导航栏
 class DetailsInfoProvide with ChangeNotifier {
