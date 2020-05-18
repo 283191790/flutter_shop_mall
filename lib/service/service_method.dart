@@ -3,12 +3,13 @@ import 'dart:async';
 import 'dart:io';
 import '../config/service_url.dart';
 
+
 Future request(url,{formData})async{
     try{
       print('开始获取数据...............');
       Response response;
       Dio dio = new Dio();
-      dio.options.contentType = ContentType.parse('application/x-www-form-urlencoded');
+      dio.options.contentType= Headers.formUrlEncodedContentType;
       if(formData==null){
         
           response = await dio.post(servicePath[url]);
