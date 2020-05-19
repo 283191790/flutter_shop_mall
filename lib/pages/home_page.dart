@@ -425,7 +425,7 @@ class Floor extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double width = ScreenUtil.getInstance().width; 
+    double width = ScreenUtil.screenWidth; 
     return Container(
       child: Row(
         children: <Widget>[
